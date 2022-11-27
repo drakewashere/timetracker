@@ -1,2 +1,2 @@
 # timetracker
- Basic time tracker for technocal interview
+ Basic time tracker for technical interview
