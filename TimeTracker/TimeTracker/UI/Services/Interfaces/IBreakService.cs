@@ -13,6 +13,6 @@ namespace UI.Services.Interfaces
         Task<IEnumerable<Break>> GetBreaksForShiftAudit(long shiftId);
         Task<IEnumerable<Break>> GetBreaksForUser(long userId);
         Task<IEnumerable<Break>> GetBreaksForUserAudit(long userId);
-        Task<Break?> GetOpenBreak(long userId);
+        Task<Break?> GetOpenBreakForUser(long userId);
     }
 }
