@@ -46,7 +46,7 @@ namespace UI.Services
             .Where(b => b.ShiftId == shiftId));
 
         public async Task<IEnumerable<Break>> GetBreaksForShift(long shiftId)
-            => await Task.Run( () => Breaks
+            => await Task.Run(() => Breaks
             .Where(IsActive)
             .Where(b => b.ShiftId == shiftId));
 
@@ -84,10 +84,17 @@ namespace UI.Services
             }
 
             var openShift = await _shift.GetOpenShift(userId);
-            if (openShift == null) 
+            if (openShift == null)
             {
                 _logger.LogWarning($"Cannot start break for user {userId}, as no shift is currently open");
                 throw new Exception($"Cannot start a new break with no open shift");
+            }
+
+            var openBreaks = await GetBreaksForShift(openShift.ShiftId);
+            if (openBreaks.Any(b => b.EndTime != null))
+            {
+                _logger.LogWarning($"Cannot start break for user {userId}, as another break(s) is currently open");
+                throw new Exception($"Cannot start a new break with an open break");
             }
 
             var newBreak = new Break
@@ -110,17 +117,16 @@ namespace UI.Services
                 throw new Exception("Cannot add break for shift that does not exist");
             }
 
+            if (currentBreak.EditedByUser == null)
+                throw new Exception("Cannot edit break with no editing user");
+
+            currentBreak.EditedDate = DateTime.UtcNow;
+
             if (currentBreak.BreakId == 0)
                 await Breaks.AddAsync(currentBreak);
             else
-            {
-                if (currentBreak.EditedByUser == null)
-                    throw new Exception("Cannot edit break with no editing user");
-
-                currentBreak.EditedDate = DateTime.UtcNow;
                 Breaks.Update(currentBreak);
-            }
-            
+
             await _context.SaveChangesAsync();
 
             return currentBreak;
