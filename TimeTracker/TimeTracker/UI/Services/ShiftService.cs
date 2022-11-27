@@ -41,11 +41,11 @@ namespace UI.Services
         public async Task<Shift?> GetOpenShiftForUser(long userId)
             => await Shifts
                 .Where(IsActive)
-                .Where(s => s.UserId == userId)
+                .Where(s => s.UserId == userId && s.EndTime == null)
                 .OrderBy(b => b.StartTime)
                 .FirstOrDefaultAsync();
 
-        public async Task<Shift> EndCurrentShift(long userId)
+        public async Task<Shift> EndCurrentShiftForUser(long userId)
         {
             var currentShift = await GetOpenShiftForUser(userId);
 
@@ -62,10 +62,10 @@ namespace UI.Services
             return currentShift;
         }
 
-        public async Task<Shift> CreateShiftForUser(long userId, int ShiftTypeId)
+        public async Task<Shift> CreateShiftForUser(long userId)
         {
             var openShifts = await GetShiftsForUser(userId);
-            if (openShifts.Any(b => b.EndTime != null))
+            if (openShifts.Any(b => b.EndTime == null))
             {
                 _logger.LogWarning($"Cannot start shift for user {userId}, as another shift(s) is currently open");
                 throw new Exception($"Cannot start a new shift with an open shift");

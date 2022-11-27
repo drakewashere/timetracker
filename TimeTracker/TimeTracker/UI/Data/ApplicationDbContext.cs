@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿#nullable disable
+
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography.X509Certificates;
@@ -13,8 +15,8 @@ namespace UI.Data
         {
         }
 
-        public DbSet<Shift> Shifts { get; set; }
-        public DbSet<Break> Breaks { get; set; }
+        public virtual DbSet<Shift> Shifts { get; set; }
+        public virtual DbSet<Break> Breaks { get; set; }
         public DbSet<BreakType> BreakTypes { get; set; }
     }
 }
