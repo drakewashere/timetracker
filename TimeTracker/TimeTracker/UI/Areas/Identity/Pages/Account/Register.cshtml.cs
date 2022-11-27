@@ -12,15 +12,15 @@ namespace UI.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly IUserStore<IdentityUser> _userStore;
+        private readonly SignInManager<IdentityUser<long>> _signInManager;
+        private readonly UserManager<IdentityUser<long>> _userManager;
+        private readonly IUserStore<IdentityUser<long>> _userStore;
         private readonly ILogger<RegisterModel> _logger;
 
         public RegisterModel(
-            UserManager<IdentityUser> userManager,
-            IUserStore<IdentityUser> userStore,
-            SignInManager<IdentityUser> signInManager,
+            UserManager<IdentityUser<long>> userManager,
+            IUserStore<IdentityUser<long>> userStore,
+            SignInManager<IdentityUser<long>> signInManager,
             ILogger<RegisterModel> logger)
         {
             _userManager = userManager;
@@ -111,11 +111,11 @@ namespace UI.Areas.Identity.Pages.Account
             return Page();
         }
 
-        private IdentityUser CreateUser()
+        private IdentityUser<long> CreateUser()
         {
             try
             {
-                return Activator.CreateInstance<IdentityUser>();
+                return Activator.CreateInstance<IdentityUser<long>>();
             }
             catch
             {
