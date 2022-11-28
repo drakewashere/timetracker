@@ -41,7 +41,7 @@ namespace UI.Services
         public async Task<Shift?> GetOpenShiftForUser(string userId)
             => await Shifts
                 .Where(IsActive)
-                .Where(s => s.UserId == userId && s.EndTime == null)
+                .Where(s => s.UserId == userId && s.EndTime == null && s.StartTime < DateTime.UtcNow)
                 .OrderBy(b => b.StartTime)
                 .FirstOrDefaultAsync();
 

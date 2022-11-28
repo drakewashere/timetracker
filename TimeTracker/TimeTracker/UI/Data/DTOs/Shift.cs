@@ -14,7 +14,7 @@ namespace UI.Data.DTOs
 
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public DateTime? EditedDate { get; set; }
         public string EditedByUser { get; set; }
         public DateTime? DeletedDate { get; set; }

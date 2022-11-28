@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using UI.Areas.Identity;
 using UI.Data;
+using UI.Services;
+using UI.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +28,9 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options=> {
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
+
+builder.Services.AddScoped<IShiftService, ShiftService>();
+builder.Services.AddScoped<IBreakService, BreakService>();
 
 var app = builder.Build();
 

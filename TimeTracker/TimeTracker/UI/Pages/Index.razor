@@ -1,7 +1,13 @@
 ﻿@page "/"
+@using UI.Pages.TimeTracking
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
+<AuthorizeView>
+    <Authorized>
+        <CurrentShift/>
+    </Authorized>
+    <NotAuthorized>
+        <p>Please register or login to continue</p>
+    </NotAuthorized>
+</AuthorizeView>

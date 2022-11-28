@@ -22,6 +22,27 @@ namespace UI.Services
             _context = context;
             _shift = shiftService;
             _logger = logger;
+
+            SeedBreakTypes(_context);
+        }
+
+        private static bool BreakTypesSeeded { get; set; }
+
+        private static void SeedBreakTypes(ApplicationDbContext context)
+        {
+            if (BreakTypesSeeded)
+                return;
+
+            foreach(var breakType in Enum.GetValues(typeof(BreakTypeId)))
+            {
+                var instance = context.BreakTypes
+                    .FirstOrDefault(bt => bt.BreakTypeId == (BreakTypeId)breakType);
+                if (instance == null)
+                {
+                    context.Add(new BreakType { BreakTypeId = (BreakTypeId)breakType, Name = ((BreakTypeId)breakType).ToString() });
+                    context.SaveChanges();
+                }
+            }
         }
 
         private static Expression<Func<Break, bool>> IsActive
@@ -53,7 +74,7 @@ namespace UI.Services
         public async Task<Break?> GetOpenBreakForUser(string userId)
             => await Breaks
                 .Where(IsActive)
-                .Where(b => b.Shift.UserId == userId && b.EndTime == null)
+                .Where(b => b.Shift.UserId == userId && b.EndTime == null && b.StartTime < DateTime.UtcNow)
                 .OrderBy(b => b.StartTime)
                 .FirstOrDefaultAsync();
 
@@ -94,7 +115,7 @@ namespace UI.Services
             {
                 ShiftId = openShift.ShiftId,
                 StartTime = DateTime.UtcNow,
-                BreakTypeName = breakType
+                BreakTypeId = breakType
             };
             await Breaks.AddAsync(newBreak);
             await _context.SaveChangesAsync();

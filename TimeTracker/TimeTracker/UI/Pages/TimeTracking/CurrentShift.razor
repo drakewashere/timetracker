@@ -1,0 +1,54 @@
+﻿<div>
+    <button @onclick="Refresh">Refresh</button>
+    @if(OpenShift != null)
+    {
+        <p>Shift started at @ShiftStartTime</p>
+        @if (TimeOnBreakForOpenShift != null)
+        {
+            <p>Total time on completed breaks is @TimeOnBreakForOpenShift.Value.ToString("h' hours and 'm' minutes'")</p>
+        }
+        @if(OpenBreak != null)
+        {
+            <p>@OpenBreak.BreakType.Name started at @BreakStartTime</p>
+            <p>Total time on open break is @BreakLength.ToString("h' hours and 'm' minutes'")</p>
+            <button @onclick="CloseBreak">Close Break</button>
+        }
+        else
+        {
+            <button @onclick="StartBreak">Start Break</button>
+            <button @onclick="StartLunch">Start Lunch</button>
+        }
+        <br /><button @onclick="CloseShift">Close Shift</button>
+    }
+    else
+    {
+        <button @onclick="CreateShift">Start Shift</button>
+    }
+</div>
+
+@code
+{
+    protected override async Task OnInitializedAsync()
+    {
+        UserId = await GetUserId();
+        OpenShift = await GetOpenShift();
+        OpenBreak = await GetOpenBreak();
+        TimeOnBreakForOpenShift = await GetTimeOnBreakForOpenShift();
+
+        if (OpenShift != null)
+            ShiftStartTime = OpenShift.StartTime!.Value.ToLocalTime().ToLongDateString();
+        if (OpenBreak != null)
+            BreakStartTime = OpenBreak.StartTime!.Value.ToLocalTime().ToLongDateString();
+    }
+
+    async Task Refresh()
+        => await InvokeAsync(StateHasChanged);
+
+    async Task StartBreak()
+        => await CreateBreak(Data.DTOs.BreakTypeId.Break);
+    async Task StartLunch()
+        => await CreateBreak(Data.DTOs.BreakTypeId.Lunch);
+
+    protected TimeSpan BreakLength
+        => DateTime.UtcNow - OpenBreak!.StartTime!.Value;
+}
