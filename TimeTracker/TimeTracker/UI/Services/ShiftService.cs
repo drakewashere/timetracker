@@ -29,23 +29,23 @@ namespace UI.Services
                 .Where(IsActive)
                 .FirstOrDefaultAsync(s => s.ShiftId == shiftId);
 
-        public async Task<IEnumerable<Shift>> GetShiftsForUserAudit(long userId)
+        public async Task<IEnumerable<Shift>> GetShiftsForUserAudit(string userId)
             => await Task.Run(() => Shifts
             .Where(s => s.UserId == userId));
 
-        public async Task<IEnumerable<Shift>> GetShiftsForUser(long userId)
+        public async Task<IEnumerable<Shift>> GetShiftsForUser(string userId)
             => await Task.Run(() => Shifts
             .Where(IsActive)
             .Where(s => s.UserId == userId));
 
-        public async Task<Shift?> GetOpenShiftForUser(long userId)
+        public async Task<Shift?> GetOpenShiftForUser(string userId)
             => await Shifts
                 .Where(IsActive)
                 .Where(s => s.UserId == userId && s.EndTime == null)
                 .OrderBy(b => b.StartTime)
                 .FirstOrDefaultAsync();
 
-        public async Task<Shift> EndCurrentShiftForUser(long userId)
+        public async Task<Shift> EndCurrentShiftForUser(string userId)
         {
             var currentShift = await GetOpenShiftForUser(userId);
 
@@ -62,7 +62,7 @@ namespace UI.Services
             return currentShift;
         }
 
-        public async Task<Shift> CreateShiftForUser(long userId)
+        public async Task<Shift> CreateShiftForUser(string userId)
         {
             var openShifts = await GetShiftsForUser(userId);
             if (openShifts.Any(b => b.EndTime == null))
@@ -99,7 +99,7 @@ namespace UI.Services
             return currentShift;
         }
 
-        public async Task<Shift> DeleteShift(long ShiftId, long userId)
+        public async Task<Shift> DeleteShift(long ShiftId, string userId)
         {
             var currentShift = await GetShiftById(ShiftId);
             if (currentShift == null)

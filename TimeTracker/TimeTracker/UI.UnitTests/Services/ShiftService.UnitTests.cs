@@ -33,7 +33,7 @@ namespace UI.UnitTests.Services
         {
             var _shift = CreateShiftService();
 
-            var newShift = await _shift.CreateShiftForUser(1);
+            var newShift = await _shift.CreateShiftForUser("1");
             Assert.NotNull(newShift);
         }
 
@@ -42,11 +42,11 @@ namespace UI.UnitTests.Services
         {
             var shifts = new List<Shift>
             {
-                new Shift {UserId = 1},
+                new Shift {UserId = "1"},
             }.AsQueryable();
             var _shift = CreateShiftService(shifts);
 
-            await Assert.ThrowsAsync<Exception>(async () => await _shift.CreateShiftForUser(1));
+            await Assert.ThrowsAsync<Exception>(async () => await _shift.CreateShiftForUser("1"));
         }
 
         [Fact]
@@ -54,11 +54,11 @@ namespace UI.UnitTests.Services
         {
             var shifts = new List<Shift>
             {
-                new Shift {UserId = 1},
+                new Shift {UserId = "1"},
             }.AsQueryable();
             var _shift = CreateShiftService(shifts);
 
-            var userShifts = await _shift.GetShiftsForUser(1);
+            var userShifts = await _shift.GetShiftsForUser("1");
             Assert.NotEmpty(userShifts);
         }
 
@@ -67,7 +67,7 @@ namespace UI.UnitTests.Services
         {
             var shifts = new List<Shift>
             {
-                new Shift {ShiftId = 12, UserId = 1, EndTime = DateTime.UtcNow.AddMinutes(-10)}
+                new Shift {ShiftId = 12, UserId = "1", EndTime = DateTime.UtcNow.AddMinutes(-10)}
             }.AsQueryable();
             var _shift = CreateShiftService(shifts);
 
@@ -80,12 +80,12 @@ namespace UI.UnitTests.Services
         {
             var shifts = new List<Shift>
             {
-                new Shift {UserId = 1, EndTime = DateTime.UtcNow.AddMinutes(-10)},
-                new Shift {UserId = 1}
+                new Shift {UserId = "1", EndTime = DateTime.UtcNow.AddMinutes(-10)},
+                new Shift {UserId = "1"}
             }.AsQueryable();
             var _shift = CreateShiftService(shifts);
 
-            var userShift = await _shift.GetOpenShiftForUser(1);
+            var userShift = await _shift.GetOpenShiftForUser("1");
             Assert.NotNull(userShift);
             Assert.Null(userShift.EndTime);
         }
@@ -95,12 +95,12 @@ namespace UI.UnitTests.Services
         {
             var shifts = new List<Shift>
             {
-                new Shift {UserId = 1, EndTime = DateTime.UtcNow.AddMinutes(-10)},
-                new Shift {ShiftId = 12, UserId = 1}
+                new Shift {UserId = "1", EndTime = DateTime.UtcNow.AddMinutes(-10)},
+                new Shift {ShiftId = 12, UserId = "1"}
             }.AsQueryable();
             var _shift = CreateShiftService(shifts);
 
-            var userShift = await _shift.EndCurrentShiftForUser(1);
+            var userShift = await _shift.EndCurrentShiftForUser("1");
             Assert.NotNull(userShift);
             Assert.NotNull(userShift.EndTime);
             Assert.Equal("12", userShift.ShiftId.ToString());
@@ -111,7 +111,7 @@ namespace UI.UnitTests.Services
         {
             var _shift = CreateShiftService();
 
-            await Assert.ThrowsAsync<Exception>(async () => await _shift.EndCurrentShiftForUser(1));
+            await Assert.ThrowsAsync<Exception>(async () => await _shift.EndCurrentShiftForUser("1"));
         }
     }
 }

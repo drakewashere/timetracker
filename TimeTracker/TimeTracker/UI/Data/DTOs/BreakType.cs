@@ -5,11 +5,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace UI.Data.DTOs
 {
+    public enum BreakTypeId : int
+    {
+        Break = 1,
+        Lunch = 2,
+    }
+
     public class BreakType
     {
         [Key]
-        public int BreakTypeId { get; set; }
-        public string BreakTypeName { get; set; }
+        public BreakTypeId BreakTypeId { get; set; }
+        public string Name { get; set; }
 
         public virtual IEnumerable<Break> Breaks { get; set; }
     }

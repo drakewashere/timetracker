@@ -32,11 +32,11 @@ namespace UI.Services
             .Where(IsActive)
             .FirstOrDefaultAsync(b => b.BreakId == breakId);
 
-        public async Task<IEnumerable<Break>> GetBreaksForUserAudit(long userId)
+        public async Task<IEnumerable<Break>> GetBreaksForUserAudit(string userId)
             => await Task.Run(() => Breaks
             .Where(b => b.Shift.UserId == userId));
 
-        public async Task<IEnumerable<Break>> GetBreaksForUser(long userId)
+        public async Task<IEnumerable<Break>> GetBreaksForUser(string userId)
             => await Task.Run(() => Breaks
             .Where(IsActive)
             .Where(b => b.Shift.UserId == userId));
@@ -50,14 +50,14 @@ namespace UI.Services
             .Where(IsActive)
             .Where(b => b.ShiftId == shiftId));
 
-        public async Task<Break?> GetOpenBreakForUser(long userId)
+        public async Task<Break?> GetOpenBreakForUser(string userId)
             => await Breaks
                 .Where(IsActive)
                 .Where(b => b.Shift.UserId == userId && b.EndTime == null)
                 .OrderBy(b => b.StartTime)
                 .FirstOrDefaultAsync();
 
-        public async Task<Break> EndCurrentBreakForUser(long userId)
+        public async Task<Break> EndCurrentBreakForUser(string userId)
         {
             var currentBreak = await GetOpenBreakForUser(userId);
 
@@ -74,9 +74,8 @@ namespace UI.Services
             return currentBreak;
         }
 
-        public async Task<Break> CreateBreakForUser(long userId, int breakTypeId)
+        public async Task<Break> CreateBreakForUser(string userId, BreakTypeId breakType)
         {
-
             var openShift = await _shift.GetOpenShiftForUser(userId);
             if (openShift == null)
             {
@@ -95,7 +94,7 @@ namespace UI.Services
             {
                 ShiftId = openShift.ShiftId,
                 StartTime = DateTime.UtcNow,
-                BreakTypeId = breakTypeId
+                BreakTypeName = breakType
             };
             await Breaks.AddAsync(newBreak);
             await _context.SaveChangesAsync();
@@ -126,7 +125,7 @@ namespace UI.Services
             return currentBreak;
         }
 
-        public async Task<Break> DeleteBreak(long breakId, long userId)
+        public async Task<Break> DeleteBreak(long breakId, string userId)
         {
             var currentBreak = await GetBreakById(breakId);
             if (currentBreak == null)

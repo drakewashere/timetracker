@@ -48,11 +48,11 @@ namespace UI.UnitTests.Services
         {
             var breaks = new List<Break>
             {
-                new Break { BreakId = 12, Shift = new Shift {ShiftId = 1, UserId = 1 } },
+                new Break { BreakId = 12, Shift = new Shift {ShiftId = 1, UserId = "1" } },
             }.AsQueryable();
             var _breaks = CreateBreakService(breaks: breaks);
 
-            var userBreak = await _breaks.GetBreaksForUser(1);
+            var userBreak = await _breaks.GetBreaksForUser("1");
             Assert.NotEmpty(userBreak);
             Assert.Equal("12", userBreak.First().BreakId.ToString());
         }
@@ -76,12 +76,12 @@ namespace UI.UnitTests.Services
         {
             var breaks = new List<Break>
             {
-                new Break { BreakId = 10, ShiftId = 10, Shift = new Shift { UserId = 15 }, EndTime = DateTime.UtcNow.AddMinutes(-5) },
-                new Break { BreakId = 12, ShiftId = 10, Shift = new Shift { UserId = 15 } },
+                new Break { BreakId = 10, ShiftId = 10, Shift = new Shift { UserId = "15" }, EndTime = DateTime.UtcNow.AddMinutes(-5) },
+                new Break { BreakId = 12, ShiftId = 10, Shift = new Shift { UserId = "15" } },
             }.AsQueryable();
             var _breaks = CreateBreakService(breaks: breaks);
 
-            var userBreak = await _breaks.GetOpenBreakForUser(15);
+            var userBreak = await _breaks.GetOpenBreakForUser("15");
             Assert.NotNull(userBreak);
             Assert.Equal("12", userBreak.BreakId.ToString());
             Assert.Null(userBreak.EndTime);
@@ -92,12 +92,12 @@ namespace UI.UnitTests.Services
         {
             var breaks = new List<Break>
             {
-                new Break { BreakId = 10, ShiftId = 10, Shift = new Shift { UserId = 15 }, EndTime = DateTime.UtcNow.AddMinutes(-5) },
-                new Break { BreakId = 12, ShiftId = 10, Shift = new Shift { UserId = 15 } },
+                new Break { BreakId = 10, ShiftId = 10, Shift = new Shift { UserId = "15" }, EndTime = DateTime.UtcNow.AddMinutes(-5) },
+                new Break { BreakId = 12, ShiftId = 10, Shift = new Shift { UserId = "15" } },
             }.AsQueryable();
             var _breaks = CreateBreakService(breaks: breaks);
 
-            var userBreak = await _breaks.EndCurrentBreakForUser(15);
+            var userBreak = await _breaks.EndCurrentBreakForUser("15");
             Assert.NotNull(userBreak);
             Assert.Equal("12", userBreak.BreakId.ToString());
             Assert.NotNull(userBreak.EndTime);
@@ -108,11 +108,11 @@ namespace UI.UnitTests.Services
         {
             var shifts = new List<Shift>
             {
-                new Shift { UserId = 15}
+                new Shift { UserId = "15"}
             }.AsQueryable();
             var _breaks = CreateBreakService(shifts: shifts);
 
-            var userBreak = await _breaks.CreateBreakForUser(15, 1);
+            var userBreak = await _breaks.CreateBreakForUser("15", BreakTypeId.Break);
 
             Assert.NotNull(userBreak);
         }
@@ -122,7 +122,7 @@ namespace UI.UnitTests.Services
         {
             var _breaks = CreateBreakService();
 
-            await Assert.ThrowsAsync<Exception>(async () => await _breaks.CreateBreakForUser(15, 1));
+            await Assert.ThrowsAsync<Exception>(async () => await _breaks.CreateBreakForUser("15", BreakTypeId.Break));
         }
 
         [Fact]
@@ -130,15 +130,15 @@ namespace UI.UnitTests.Services
         {
             var breaks = new List<Break>
             {
-                new Break { ShiftId = 1, Shift = new Shift {ShiftId = 1, UserId = 15 } }
+                new Break { ShiftId = 1, Shift = new Shift {ShiftId = 1, UserId = "15" } }
             }.AsQueryable();
             var shifts = new List<Shift>
             {
-                new Shift { ShiftId = 1, UserId = 15}
+                new Shift { ShiftId = 1, UserId = "15"}
             }.AsQueryable();
             var _breaks = CreateBreakService(shifts, breaks);
 
-            await Assert.ThrowsAsync<Exception>(async () => await _breaks.CreateBreakForUser(15, 1));
+            await Assert.ThrowsAsync<Exception>(async () => await _breaks.CreateBreakForUser("15", BreakTypeId.Break));
         }
     }
 }
