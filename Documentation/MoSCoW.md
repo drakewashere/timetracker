@@ -20,11 +20,11 @@
 - [X] Not allow a user to start a shift while there is still an open shift
 - [X] Not allow a user to start a break when they are not on an active shift
 - [X] Not allow a user to start a lunch when they are not on an active shift
+- [X] Not allow a user to start a break when they have an open break
+- [X] Not allow a user to start a lunch when they have an open break
 
 ## Should (assumptions based on domain knowledge)
-- [X] Not allow a user to start a break when they have an open break
 - [X] Not allow a user to start a break when they have an open lunch
-- [X] Not allow a user to start a lunch when they have an open break
 - [X] Not allow a user to start a lunch when they have an open lunch
 
 ## Could
