@@ -32,6 +32,10 @@
 - [X] Create two account types, the new one being an admin account
 - [X] Allow admin accounts the ability to view the time for any other employee
 - [ ] Allow admin accounts the ability to add, edit, and delete timestamps (work, break, lunch) with no restrictions
+- - [X] Add, edit shifts
+- - [X] Add breaks
+- - [ ] Edit breaks
+- - [ ] Delete timestamps
 - [X] Allow admin accounts the ability to view a report for all employees time sheets
 - [X] Allow admin to filter the report of all employees time sheets
 -- (No default filters given by stakeholder)
@@ -41,8 +45,7 @@
 - [X] Allow setting passwords for users
 - [X] Apply basic security principals to password storage
 - [X] Data persistence of timesheets accross application instances
-- [ ] Allow admins to edit or delete time stamps
-- [ ] Store which admin edited a time stamp
+- [X] Store which admin edited a time stamp
 - [ ] Store which admin deleted a time stamp
 - [ ] Custom timelines for user dashboard - show weekly, biweekly, monthly
 - [X] Provide a user-friendly failure mode if the employee ID is not registered, or none is entered
