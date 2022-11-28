@@ -10,13 +10,13 @@
 - [X] Provide a UI front-end with the aibility to end a break
 - [X] Provide a UI front-end with the ability to start a lunch
 - [X] Provide a UI front-end with the ability to end a lunch
-- [ ] Provide a UI dashboard for the time entered for the emloyee
+- [X] Provide a UI dashboard for the time entered for the emloyee
 
 ## Should
 - [X] Only allow a user with a valid employee ID to enter work for themselvelves
 - [x] Only allow a user with a valid employee ID to enter a break for themselvelves
 - [X] Only allow a user with a valid employee ID to enter a lunch for themselvelves
-- [ ] Only allow a user with a valid employee ID to view their time dashboard
+- [X] Only allow a user with a valid employee ID to view their time dashboard
 - [X] Not allow a user to start a shift while there is still an open shift
 - [X] Not allow a user to start a break when they are not on an active shift
 - [X] Not allow a user to start a lunch when they are not on an active shift
@@ -30,10 +30,10 @@
 ## Could
 - [X] Allow users to register themselves
 - [X] Create two account types, the new one being an admin account
-- [ ] Allow admin accounts the ability to view the time for any other employee
+- [X] Allow admin accounts the ability to view the time for any other employee
 - [ ] Allow admin accounts the ability to add, edit, and delete timestamps (work, break, lunch) with no restrictions
-- [ ] Allow admin accounts the ability to view a report for all employees time sheets
-- [ ] Allow admin to filter the report of all employees time sheets
+- [X] Allow admin accounts the ability to view a report for all employees time sheets
+- [X] Allow admin to filter the report of all employees time sheets
 -- (No default filters given by stakeholder)
 -- (No specification if this should be custom query creation, or fixed filters)
 
