@@ -97,7 +97,9 @@ namespace UI.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
-                    await _userManager.AddClaimAsync(user, new Claim("Admin", Input.IsAdmin.ToString()));
+                    if (Input.IsAdmin)
+                        await _userManager.AddToRoleAsync(user, "Admin");
+                    
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return LocalRedirect(returnUrl);
                 }
