@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using System.Linq.Expressions;
 using UI.Data;
 using UI.Data.DTOs;
@@ -87,6 +88,12 @@ namespace UI.Services
             if (currentShift.EditedByUser == null)
                 throw new Exception("Cannot edit shift with no editing user");
 
+            if (currentShift.StartTime == default)
+                currentShift.StartTime = DateTime.UtcNow;
+
+            if (currentShift.EndTime != null && currentShift.EndTime < currentShift.StartTime)
+                throw new Exception("Cannot set a end time before the start time");
+
             currentShift.EditedDate = DateTime.UtcNow;
 
             if (currentShift.ShiftId == 0)
@@ -112,6 +119,19 @@ namespace UI.Services
             await _context.SaveChangesAsync();
 
             return currentShift;
+        }
+
+        public async Task<IEnumerable<Report>> GenerateReportSource(string? userId = null, DateTimeOffset? StartDate = null, DateTimeOffset? EndDate = null)
+        {
+            var a = await Task.Run(() => Shifts
+                .Where(s =>
+                    (string.IsNullOrEmpty(userId) || userId == s.UserId)));
+            var b = a
+                .Where(s =>
+                    (StartDate == null || StartDate.Value <= s.StartTime)
+                    && (EndDate == null || EndDate.Value >= s.StartTime))
+                .Select(s => new Report { Shift = s, Breaks = s.Breaks.ToList(), User = s.User });
+            return b;
         }
     }
 }

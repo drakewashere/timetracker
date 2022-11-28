@@ -1,0 +1,96 @@
+﻿@using UI.Data.DTOs;
+
+<ul>
+    @foreach (var entry in Entries)
+    {
+        <li>@entry.Date.ToLongDateString()</li>
+        @foreach(var user in entry!.ReportsByUser!.Select(r => r.Item1).Distinct().OrderBy(o => o))
+        {
+                <ul>
+                    <li>@user</li>
+                        <ul>
+                        @foreach(var report in entry!.ReportsByUser!.Where(r => r.Item1 == user).SelectMany(r => r.Item2))
+                        {
+                            <li>
+                                <p>
+                                    Started at @SetTimezone(report.Shift.StartTime).ToString("HH:mm")
+                                @(report.Shift.EndTime == null
+                                    ? "- Shift still open"
+                                    : $"- Shift complete with total time {(report.Shift.EndTime - report.Shift.StartTime).Value.ToString("h' hours 'm' minutes'")}")
+                                </p>
+
+                                @if(report.Breaks.Any())
+                                {
+                                    
+                                    var openBreak = report.Breaks.OrderBy(b => b.StartTime).FirstOrDefault(b => b.EndTime == null);
+                                    
+                                    <ul>
+                                    @if(openBreak != null)
+                                    {
+                                        <li>@openBreak.BreakType.Name still open</li>
+                                    }
+                                    @if(report.Breaks.Any(b => b.EndTime != null && b.BreakTypeId == BreakTypeId.Break))
+                                    {
+                                        var breakTicks = report.Breaks.Where(b => b.EndTime != null && b.BreakTypeId == BreakTypeId.Break).Sum(b => (b.EndTime! - b.StartTime).Value.Ticks);
+                                        var breakTime = new TimeSpan(breakTicks);
+                                        <li>Completed time on break @breakTime.ToString("h' hours 'm' minutes'")</li>
+                                    }
+                                    @if(report.Breaks.Any(b => b.EndTime != null && b.BreakTypeId == BreakTypeId.Lunch))
+                                    {
+                                        var lunchTicks = report.Breaks.Where(b => b.EndTime != null && b.BreakTypeId == BreakTypeId.Lunch).Sum(b => (b.EndTime! - b.StartTime).Value.Ticks);
+                                        var lunchTime = new TimeSpan(lunchTicks);
+                                        <li>Completed time on lunch @lunchTime.ToString("h' hours 'm' minutes'")</li>
+                                    }
+                                    </ul>
+                                }
+                            </li>
+                        }
+                        </ul>
+                </ul>
+        }
+    }
+</ul>
+
+
+@code {
+    [Parameter]
+    public IEnumerable<Report> ReportData { get; set; } = Enumerable.Empty<Report>();
+    [Parameter]
+    public string TZ { get; set; } = "";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _entries = Group() ?? Enumerable.Empty<ReportEntry>();
+    }
+
+
+    private DateTimeOffset SetTimezone(DateTime date)
+    => string.IsNullOrEmpty(TZ)
+        ? date
+        : new DateTimeOffset(date, TimeZoneInfo.Utc.BaseUtcOffset) + TimeZoneInfo.FindSystemTimeZoneById(TZ).BaseUtcOffset;
+
+    private IEnumerable<ReportEntry>? _entries { get; set; }
+    protected IEnumerable<ReportEntry> Entries
+        => _entries ??= Group() ?? Enumerable.Empty<ReportEntry>();
+
+    protected IEnumerable<ReportEntry>? Group()
+        => ReportData?.
+            GroupBy(e =>
+                string.IsNullOrEmpty(TZ)
+                ? e.Shift.StartTime.Date
+                : SetTimezone(e.Shift.StartTime).Date)
+            .Select(e =>
+                new ReportEntry
+                    {
+                        Date = e.Key,
+                        ReportsByUser = e
+                            .GroupBy(r => r.User.UserName)
+                            .Select(r => new Tuple<string, IEnumerable<Report>>(r.Key, r))
+                    });
+
+    protected class ReportEntry
+    {
+        public DateTime Date { get; set; }
+        public IEnumerable<Tuple<string, IEnumerable<Report>>>? ReportsByUser {get; set;}
+    }
+}

@@ -3,6 +3,7 @@
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace UI.Data.DTOs
 {
@@ -11,8 +12,8 @@ namespace UI.Data.DTOs
         [Key]
         public long ShiftId { get; set; }
         public string UserId { get; set; }
-
-        public DateTime? StartTime { get; set; }
+        [NotNull]
+        public DateTime StartTime { get; set; }
         public DateTime? EndTime { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public DateTime? EditedDate { get; set; }

@@ -64,7 +64,7 @@ namespace UI.Pages.TimeTracking
             try
             {
                 OpenBreak = await BreakService.CreateBreakForUser((await GetUserId()) ?? string.Empty, breakType);
-                BreakStartTime = FormatDateTime(OpenBreak!.StartTime!.Value);
+                BreakStartTime = FormatDateTime(OpenBreak!.StartTime);
             }
             catch (Exception ex)
             {
@@ -99,7 +99,7 @@ namespace UI.Pages.TimeTracking
             try
             {
                 OpenShift = await ShiftService.CreateShiftForUser((await GetUserId()) ?? string.Empty);
-                ShiftStartTime = FormatDateTime(OpenShift!.StartTime!.Value);
+                ShiftStartTime = FormatDateTime(OpenShift!.StartTime);
                 TimeOnBreakForOpenShift = await GetTimeOnBreakForOpenShift();
             }
             catch (Exception ex)
@@ -141,8 +141,8 @@ namespace UI.Pages.TimeTracking
             var breaks = await BreakService.GetBreaksForShift(OpenShift?.ShiftId ?? 0);
 
             var timespanTicks = breaks
-                .Where(b => b.StartTime != null && b.EndTime != null)
-                .Sum(b => (b!.EndTime!.Value - b!.StartTime!.Value).Ticks);
+                .Where(b => b.EndTime != null)
+                .Sum(b => (b!.EndTime!.Value - b!.StartTime).Ticks);
 
             TimeOnBreakForOpenShift = new TimeSpan(timespanTicks);
 

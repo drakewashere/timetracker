@@ -6,7 +6,7 @@
     }
     @if(OpenShift != null)
     {
-        <p>Shift started at @ShiftStartTime</p>
+        <p>Shift started at @ShiftStartTime UTC</p>
         <p>Total time on shift is @ShiftLength.ToString("h' hours and 'm' minutes'")</p>
         @if (TimeOnBreakForOpenShift != null)
         {
@@ -14,7 +14,7 @@
         }
         @if(OpenBreak != null)
         {
-            <p>@OpenBreak.BreakType.Name started at @BreakStartTime</p>
+            <p>@OpenBreak.BreakType.Name started at @BreakStartTime UTC</p>
             <p>Total time on open break is @BreakLength.ToString("h' hours and 'm' minutes'")</p>
             <button @onclick="CloseBreak">Close Break</button>
         }
@@ -42,9 +42,9 @@
         TimeOnBreakForOpenShift = await GetTimeOnBreakForOpenShift();
 
         if (OpenShift != null)
-            ShiftStartTime = OpenShift.StartTime!.Value.ToLocalTime().ToLongDateString();
+            ShiftStartTime = OpenShift.StartTime!.ToLongDateString();
         if (OpenBreak != null)
-            BreakStartTime = OpenBreak.StartTime!.Value.ToLocalTime().ToLongDateString();
+            BreakStartTime = OpenBreak.StartTime!.ToLongDateString();
     }
 
     async Task Refresh()
@@ -56,8 +56,8 @@
         => await CreateBreak(Data.DTOs.BreakTypeId.Lunch);
 
     protected TimeSpan BreakLength
-        => DateTime.UtcNow - OpenBreak!.StartTime!.Value;
+        => DateTime.UtcNow - OpenBreak!.StartTime;
     
     protected TimeSpan ShiftLength
-        => DateTime.UtcNow - OpenShift!.StartTime!.Value;
+        => DateTime.UtcNow - OpenShift!.StartTime;
 }

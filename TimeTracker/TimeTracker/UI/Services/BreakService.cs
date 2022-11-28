@@ -3,6 +3,7 @@ using UI.Data.DTOs;
 using UI.Data;
 using System.Linq.Expressions;
 using UI.Services.Interfaces;
+using UI.Pages.TimeTracking;
 
 namespace UI.Services
 {
@@ -133,6 +134,12 @@ namespace UI.Services
 
             if (currentBreak.EditedByUser == null)
                 throw new Exception("Cannot edit break with no editing user");
+
+            if (currentBreak.StartTime == default)
+                currentBreak.StartTime = DateTime.UtcNow;
+
+            if (currentBreak.EndTime != null && currentBreak.EndTime < currentBreak.StartTime)
+                throw new Exception("Cannot set a end time before the start time");
 
             currentBreak.EditedDate = DateTime.UtcNow;
 

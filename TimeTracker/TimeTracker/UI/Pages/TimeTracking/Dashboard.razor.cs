@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using UI.Data.DTOs;
 using UI.Services.Interfaces;
 
 namespace UI.Pages.TimeTracking
@@ -48,5 +49,22 @@ namespace UI.Pages.TimeTracking
         protected IEnumerable<Tuple<string, string>>? UserList { get; set; }
         protected async Task<IEnumerable<Tuple<string, string>>?> GetUserList()
             => UserList ??= (await UserService.GetUserList());
+
+
+        protected IEnumerable<Report> ReportData { get; set; }
+        protected DateTime? ReportStartDate { get; set; }
+        protected DateTime? ReportEndDate { get; set; }
+        protected string? ReportTimeZone { get; set; }
+        protected async Task<IEnumerable<Report>> GenerateReportData()
+            => ReportData = await ShiftService.GenerateReportSource(ViewAll ? null : UserId, ReportDateAddTimezone(ReportStartDate), ReportDateAddTimezone(ReportEndDate));
+
+        private DateTimeOffset? ReportDateAddTimezone(DateTime? date)
+        {
+            if (date == null || string.IsNullOrEmpty(ReportTimeZone))
+                return date;
+
+            return new DateTimeOffset(date.Value, TimeZoneInfo.FindSystemTimeZoneById(ReportTimeZone).BaseUtcOffset);
+
+        }
     }
 }
