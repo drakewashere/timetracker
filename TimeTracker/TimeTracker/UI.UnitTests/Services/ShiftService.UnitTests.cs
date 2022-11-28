@@ -20,16 +20,7 @@ namespace UI.UnitTests.Services
             .BuildServiceProvider()
             .GetService<ILoggerFactory>();
 
-
-        private IShiftService CreateEmptyShiftService()
-        {
-            var context = new MoqDbContext().GetDbContext();
-            var logger = LoggerFactory!.CreateLogger<ShiftService>();
-
-            return new ShiftService(context, logger);
-        }
-
-        private IShiftService CreateShiftService(IQueryable<Shift> shifts)
+        private IShiftService CreateShiftService(IQueryable<Shift>? shifts = null)
         {
             var context = new MoqDbContext(shifts).GetDbContext();
             var logger = LoggerFactory!.CreateLogger<ShiftService>();
@@ -40,7 +31,7 @@ namespace UI.UnitTests.Services
         [Fact]
         public async Task CanCreateShift()
         {
-            var _shift = CreateEmptyShiftService();
+            var _shift = CreateShiftService();
 
             var newShift = await _shift.CreateShiftForUser(1);
             Assert.NotNull(newShift);
@@ -68,7 +59,7 @@ namespace UI.UnitTests.Services
             var _shift = CreateShiftService(shifts);
 
             var userShifts = await _shift.GetShiftsForUser(1);
-            Assert.NotNull(userShifts);
+            Assert.NotEmpty(userShifts);
         }
 
         [Fact]
@@ -118,7 +109,7 @@ namespace UI.UnitTests.Services
         [Fact]
         public async Task CantEndShiftNoShift()
         {
-            var _shift = CreateEmptyShiftService();
+            var _shift = CreateShiftService();
 
             await Assert.ThrowsAsync<Exception>(async () => await _shift.EndCurrentShiftForUser(1));
         }

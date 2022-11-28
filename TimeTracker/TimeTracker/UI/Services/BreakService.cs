@@ -53,11 +53,11 @@ namespace UI.Services
         public async Task<Break?> GetOpenBreakForUser(long userId)
             => await Breaks
                 .Where(IsActive)
-                .Where(b => b.Shift.UserId == userId)
+                .Where(b => b.Shift.UserId == userId && b.EndTime == null)
                 .OrderBy(b => b.StartTime)
                 .FirstOrDefaultAsync();
 
-        public async Task<Break> EndCurrentBreak(long userId)
+        public async Task<Break> EndCurrentBreakForUser(long userId)
         {
             var currentBreak = await GetOpenBreakForUser(userId);
 
@@ -76,12 +76,6 @@ namespace UI.Services
 
         public async Task<Break> CreateBreakForUser(long userId, int breakTypeId)
         {
-            var openBreak = await GetOpenBreakForUser(userId);
-            if (openBreak != null)
-            {
-                _logger.LogWarning($"Cannot start break for user {userId}, as break {openBreak.BreakId} is currently open");
-                throw new Exception($"Cannot start a new break with a break open");
-            }
 
             var openShift = await _shift.GetOpenShiftForUser(userId);
             if (openShift == null)
@@ -91,7 +85,7 @@ namespace UI.Services
             }
 
             var openBreaks = await GetBreaksForShift(openShift.ShiftId);
-            if (openBreaks.Any(b => b.EndTime != null))
+            if (openBreaks.Any(b => b.EndTime == null))
             {
                 _logger.LogWarning($"Cannot start break for user {userId}, as another break(s) is currently open");
                 throw new Exception($"Cannot start a new break with an open break");

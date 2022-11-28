@@ -7,7 +7,7 @@ namespace UI.Services.Interfaces
         Task<Break> AddInsertBreak(Break currentBreak);
         Task<Break> CreateBreakForUser(long userId, int breakTypeId);
         Task<Break> DeleteBreak(long breakId, long userId);
-        Task<Break> EndCurrentBreak(long userId);
+        Task<Break> EndCurrentBreakForUser(long userId);
         Task<Break?> GetBreakById(long breakId);
         Task<IEnumerable<Break>> GetBreaksForShift(long shiftId);
         Task<IEnumerable<Break>> GetBreaksForShiftAudit(long shiftId);
