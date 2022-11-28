@@ -1,0 +1,88 @@
+﻿@using UI.Data.DTOs;
+@using UI.Services.Interfaces;
+
+<div>
+    <h3>@(CurrentBreak.BreakId == 0 ? "Add new break" : "Edit break")</h3>
+    @if (!string.IsNullOrEmpty(Message))
+    {
+        <p>@Message</p>
+    }
+    <label>Start Time UTC:</label><input type="datetime-local" @bind="CurrentBreak.StartTime"/><br />
+    <label>End Time UTC</label><input type="datetime-local" @bind="CurrentBreak.EndTime" /><br />
+    <select @bind=CurrentBreak.BreakTypeId>
+        <option></option>
+        <option value="@BreakTypeId.Break">Break</option>
+        <option value="@BreakTypeId.Lunch">Lunch</option>
+    </select>
+    <button @onclick="SubmitForm">Save</button>
+</div>
+
+@code {
+    [Parameter]
+    public long ShiftId { get; set; }
+    [Parameter]
+    public Break CurrentBreak { get; set; }
+    protected string? Message { get; set; } = null;
+
+    [Inject]
+    private IBreakService BreakService { get; set; }
+    [Inject]
+    private AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+
+    private string? UserId { get; set; }
+    private async Task<string?> GetUserId()
+    {
+        if (string.IsNullOrWhiteSpace(UserId))
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity?.IsAuthenticated ?? false)
+            {
+                UserId = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+            }
+        }
+
+        return UserId;
+    }
+
+    protected async Task SubmitForm()
+    {
+        try
+        {
+            var add = CurrentBreak.BreakId == 0;
+            CurrentBreak.EditedByUser = await GetUserId();
+            CurrentBreak.EditedDate = DateTime.UtcNow;
+            var saved = await BreakService.AddInsertBreak(CurrentBreak);
+
+            if (add)
+            {
+                Message = $"Added break {saved.BreakId}";
+                CurrentBreak = new() 
+                {
+                    ShiftId = ShiftId,
+                    StartTime = DateTime.UtcNow
+                };
+            }
+            else
+            {
+                Message = $"Saved break";
+            }
+            await InvokeAsync(StateHasChanged);
+        }
+        catch
+        {
+            Message = "Could not add/edit break";
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        CurrentBreak ??= new()
+        {
+            ShiftId = ShiftId,
+            StartTime = DateTime.UtcNow
+        };
+    }
+
+}

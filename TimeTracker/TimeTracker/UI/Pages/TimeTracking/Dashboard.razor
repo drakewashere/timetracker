@@ -1,4 +1,5 @@
 ﻿@page "/Dashboard"
+@using UI.Pages.Admin
 @using UI.Pages.Shared
 
 <h3>Dashboard</h3>
@@ -13,7 +14,11 @@
             }
         </select>
         <label>View all:</label><input type="checkbox" @bind="ViewAll"/>
-        <br/><br/>
+        <button @onclick="ToggleAdd">Toggle add shift dialog</button>
+        @if (ShowAdd)
+        {
+            <AddEditShift ShiftUserId="@UserId" />
+        }
     </Authorized>
     <NotAuthorized></NotAuthorized>
 </AuthorizeView>
@@ -22,12 +27,18 @@
     <label>Start Time</label><input type="datetime-local" @bind="ReportStartDate"/><br />
     <label>End Time</label><input type="datetime-local" @bind="ReportEndDate"/><br />
     <label>Time Zone</label><select @bind="ReportTimeZone"><TzOptions/></select>
-    <button @onclick="Refresh">Select</button>
+    <button @onclick="GenerateReport">Select</button>
 </div>
 <TimestampReport TZ="@ReportTimeZone" ReportData="@ReportData"/>
 
 @code {
-    protected async Task Refresh()
+    protected bool ShowAdd { get; set; }
+    protected async Task ToggleAdd()
+    {
+        ShowAdd = !ShowAdd;
+        await InvokeAsync(StateHasChanged);
+    }
+    protected async Task GenerateReport()
     {
         ReportData = await GenerateReportData();
         await InvokeAsync(StateHasChanged);

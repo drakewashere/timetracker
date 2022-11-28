@@ -1,4 +1,5 @@
 ﻿@using UI.Data.DTOs;
+@using UI.Pages.Admin
 
 <ul>
     @foreach (var entry in Entries)
@@ -12,12 +13,26 @@
                         @foreach(var report in entry!.ReportsByUser!.Where(r => r.Item1 == user).SelectMany(r => r.Item2))
                         {
                             <li>
-                                <p>
                                     Started at @SetTimezone(report.Shift.StartTime).ToString("HH:mm")
                                 @(report.Shift.EndTime == null
                                     ? "- Shift still open"
                                     : $"- Shift complete with total time {(report.Shift.EndTime - report.Shift.StartTime).Value.ToString("h' hours 'm' minutes'")}")
-                                </p>
+                                    <AuthorizeView Roles="Admin">
+                                        <Authorized>
+                                            <button @onclick="() => ToggleEditShift(report.Shift.ShiftId)">Toggle edit shift dialog</button>
+                                            @if (ShowShiftEdit.GetValueOrDefault(report.Shift.ShiftId, false))
+                                            {
+                                                <AddEditShift CurrentShift="@report.Shift" />
+                                            }
+                                            <br/>
+                                            <button @onclick="() => ToggleAddBreak(report.Shift.ShiftId)">Toggle add break dialog</button>
+                                            @if(ShowAddBreak.GetValueOrDefault(report.Shift.ShiftId, false))
+                                            {
+                                                <AddEditBreak ShiftId="@report.Shift.ShiftId"/>
+                                            }
+                                        </Authorized>
+                                        <NotAuthorized></NotAuthorized>
+                                    </AuthorizeView>
 
                                 @if(report.Breaks.Any())
                                 {
@@ -63,6 +78,25 @@
         _entries = Group() ?? Enumerable.Empty<ReportEntry>();
     }
 
+    protected Dictionary<long, bool> ShowShiftEdit { get; set; } = new Dictionary<long, bool>();
+    protected async Task ToggleEditShift(long shiftId)
+    {
+        if (ShowShiftEdit.Keys.Contains(shiftId))
+            ShowShiftEdit[shiftId] = !ShowShiftEdit[shiftId];
+        else
+            ShowShiftEdit[shiftId] = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    protected Dictionary<long, bool> ShowAddBreak { get; set; } = new Dictionary<long, bool>();
+    protected async Task ToggleAddBreak(long shiftId)
+    {
+        if (ShowAddBreak.Keys.Contains(shiftId))
+            ShowAddBreak[shiftId] = !ShowAddBreak[shiftId];
+        else
+            ShowAddBreak[shiftId] = true;
+        await InvokeAsync(StateHasChanged);
+    }
 
     private DateTimeOffset SetTimezone(DateTime date)
     => string.IsNullOrEmpty(TZ)
