@@ -1,0 +1,35 @@
+﻿@page "/Dashboard"
+
+<h3>Dashboard</h3>
+
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        <select @bind="UserId">
+            <option value="@UserId">Self</option>
+            @foreach(var user in UserList!)
+            {
+                <option value="@user.Item1">@user.Item2</option>
+            }
+        </select>
+        <button @onclick="Refresh">Select</button>
+        <button @onclick="ToggleViewAllReport">View All Toggle</button>
+    </Authorized>
+    <NotAuthorized></NotAuthorized>
+</AuthorizeView>
+
+@code {
+    protected async Task Refresh()
+        => await InvokeAsync(StateHasChanged);
+
+    protected async Task ToggleViewAllReport()
+    {
+        ViewAll = !ViewAll;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        UserId = await GetUserId();
+        Task.Run(async () => UserList = await GetUserList()).Wait();
+    }
+}

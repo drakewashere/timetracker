@@ -3,6 +3,7 @@
 #nullable disable
 
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -21,12 +22,27 @@ namespace UI.Areas.Identity.Pages.Account
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
+            RoleManager<IdentityRole> roleManager,
             ILogger<RegisterModel> logger)
         {
             _userManager = userManager;
             _userStore = userStore;
             _signInManager = signInManager;
             _logger = logger;
+            SeedAdmin(roleManager);
+        }
+
+        private static bool AdminSeeded {get; set;}
+        private static void SeedAdmin(RoleManager<IdentityRole> roleManager)
+        {
+            if (!AdminSeeded && !roleManager.RoleExistsAsync("Admin").Result)
+            {
+                roleManager.CreateAsync(new IdentityRole
+                {
+                    Name = "Admin",
+                    NormalizedName = "ADMIN"
+                }).Wait();
+            }
         }
 
         /// <summary>

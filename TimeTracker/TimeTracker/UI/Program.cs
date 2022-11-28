@@ -31,6 +31,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuth
 
 builder.Services.AddScoped<IShiftService, ShiftService>();
 builder.Services.AddScoped<IBreakService, BreakService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 

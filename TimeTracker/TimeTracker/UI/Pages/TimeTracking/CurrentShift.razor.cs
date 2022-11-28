@@ -69,6 +69,7 @@ namespace UI.Pages.TimeTracking
             catch (Exception ex)
             {
                 Logger.LogCritical(ex, $"Could not open break of type {breakType} for user {UserId}");
+                ErrorState = "Could not start new break/lunch";
             }
             await InvokeAsync(StateHasChanged);
             return OpenBreak;
@@ -104,6 +105,7 @@ namespace UI.Pages.TimeTracking
             catch (Exception ex)
             {
                 Logger.LogCritical(ex, $"Could not open shift for user {UserId}");
+                ErrorState = "Could not start new shift";
             }
             await InvokeAsync(StateHasChanged);
             return OpenShift;
@@ -127,7 +129,7 @@ namespace UI.Pages.TimeTracking
             catch (Exception ex)
             {
                 Logger.LogCritical(ex, $"Could not close shift {OpenShift?.ShiftId} for user {UserId}");
-                ErrorState = "Could not close current break";
+                ErrorState = "Could not close current shift";
             }
             await InvokeAsync(StateHasChanged);
             return endedShift;
